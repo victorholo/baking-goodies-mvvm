@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#E64A19</color>
+    <color name="colorPrimaryDark">#BF360C</color>
+    <color name="colorAccent">#42A5F5</color>
+    <color name="card_image_background">#FFCCBC</color>
+    <color name="divider_color">#a8a8a8b3</color>
+    <color name="exo_background">#cc000000</color>
+    <color name="exo_background_color">#cc42A5F5</color>
+</resources>

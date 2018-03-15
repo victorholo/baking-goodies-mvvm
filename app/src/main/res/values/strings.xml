@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">Baking Goodies</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="steps_label">Steps</string>
+    <string name="ingredients_label">Ingredients</string>
+    <string name="error_occured_label">An error has occured.</string>
+    <string name="retry_label">Retry</string>
+    <string name="next_label">Next</string>
+    <string name="previous_label">Previous</string>
+    <string name="step_number_format">Step %d</string>
+    <string name="error_text_label">Couldn\'t load recipes.</string>
+</resources>

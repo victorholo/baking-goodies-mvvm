@@ -1,0 +1,55 @@
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <data>
+
+        <variable
+            name="stepDetails"
+            type="com.example.bakingapp.data.models.Step" />
+
+        <variable
+            name="stepClickHandler"
+            type="com.example.bakingapp.ui.steps.StepsAdapter.StepAdapterOnItemClickHandler" />
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/selectableItemBackground"
+        android:clickable="true"
+        android:onClick="@{() -> stepClickHandler.onItemClick(stepDetails)}"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingBottom="@dimen/material_design_padding"
+            android:paddingLeft="@dimen/material_design_padding"
+            android:paddingRight="@dimen/material_design_padding"
+            android:paddingTop="@dimen/material_design_padding">
+
+            <ImageView
+                android:layout_width="8dp"
+                android:layout_height="8dp"
+                android:layout_gravity="center_vertical"
+                android:background="@drawable/paragraph_circle" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:paddingLeft="@dimen/divider_view_margin"
+                android:paddingRight="@dimen/divider_view_margin"
+                android:text="@{stepDetails.shortDescription}"
+                android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+                android:textSize="@dimen/step_item_text_size" />
+        </LinearLayout>
+
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/divider_color" />
+    </LinearLayout>
+
+</layout>

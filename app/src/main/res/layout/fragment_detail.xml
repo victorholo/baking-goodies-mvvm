@@ -1,0 +1,118 @@
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <com.google.android.exoplayer2.ui.SimpleExoPlayerView
+            android:id="@+id/player_view"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:background="@android:color/black"
+            app:layout_constraintBottom_toTopOf="@+id/guideline"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/player_placeholder"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:padding="24dp"
+            app:layout_constraintBottom_toTopOf="@+id/guideline"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <android.support.constraint.Guideline
+            android:id="@+id/guideline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.4" />
+
+
+        <LinearLayout
+            android:id="@+id/linear_layout"
+            android:layout_width="0dp"
+            android:layout_height="64dp"
+            android:background="@android:color/white"
+            android:elevation="4dp"
+            android:paddingBottom="8dp"
+            android:paddingEnd="16dp"
+            android:paddingStart="16dp"
+            android:paddingTop="8dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
+
+            <Button
+                android:id="@+id/previous_step_button"
+                android:layout_width="0px"
+                android:layout_height="match_parent"
+                android:layout_marginRight="@dimen/divider_view_margin"
+                android:layout_weight="1"
+                android:background="@android:color/transparent"
+                android:drawableLeft="@drawable/ic_left_arrow"
+                android:drawablePadding="24dp"
+                android:foreground="?attr/selectableItemBackgroundBorderless"
+                android:gravity="center_vertical|start"
+                android:text="@string/previous_label"
+                android:textAlignment="textStart"
+                android:textColor="@color/colorPrimary" />
+
+            <Button
+                android:id="@+id/next_step_button"
+                android:layout_width="0px"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="@dimen/divider_view_margin"
+                android:layout_weight="1"
+                android:background="@android:color/transparent"
+                android:drawablePadding="24dp"
+                android:drawableRight="@drawable/ic_right_arrow"
+                android:foreground="?attr/selectableItemBackgroundBorderless"
+                android:gravity="center_vertical|end"
+                android:text="@string/next_label"
+                android:textAlignment="textEnd"
+                android:textColor="@color/colorPrimary" />
+
+        </LinearLayout>
+
+        <ScrollView
+            android:id="@+id/description_layout"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toTopOf="@+id/linear_layout"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/player_view">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/step_title_textview"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    android:textColor="@color/colorAccent"
+                    android:textSize="@dimen/title_text_size" />
+
+                <TextView
+                    android:id="@+id/description_title_textview"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="8dp"
+                    android:textSize="@dimen/step_item_text_size" />
+            </LinearLayout>
+        </ScrollView>
+    </android.support.constraint.ConstraintLayout>
+</layout>

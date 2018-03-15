@@ -1,0 +1,44 @@
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+        <ProgressBar
+            android:id="@+id/pb_loading_indicator"
+            android:layout_width="@dimen/loading_indicator_size"
+            android:layout_height="@dimen/loading_indicator_size"
+            android:layout_gravity="center"
+            android:progressTint="@color/colorAccent"
+            android:visibility="invisible" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:orientation="vertical"
+            android:layout_margin="@dimen/material_design_padding">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/material_design_padding"
+                android:text="@string/error_occured_label"
+                android:layout_gravity="center_horizontal"
+                android:id="@+id/error_textview"
+                android:visibility="invisible"/>
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/retry_label"
+                android:layout_gravity="center_horizontal"
+                android:id="@+id/retry_button"
+                android:visibility="invisible"
+                android:textColor="@color/colorAccent"
+                android:background="@android:color/transparent"/>
+        </LinearLayout>
+    </FrameLayout>
+</layout>
