@@ -112,7 +112,7 @@ public class DetailFragment extends Fragment implements Injectable, View.OnClick
                     showVideoPlaceholder(false);
                     initializePlayer(Uri.parse(videoUrl));
                 } else {
-                    if(mExoPlayer != null) mExoPlayer.stop();
+                    if (mExoPlayer != null) mExoPlayer.stop();
 
                     showVideoPlaceholder(true);
                     String thumbnailUrl = step.getThumbnailURL();
@@ -142,12 +142,26 @@ public class DetailFragment extends Fragment implements Injectable, View.OnClick
         });
     }
 
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (mExoPlayer != null) mExoPlayer.setPlayWhenReady(false);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (mExoPlayer != null) mExoPlayer.setPlayWhenReady(true);
+    }
+
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putInt(RECIPE_ID_EXTRA, mDetailViewModel.getRecipeId());
         outState.putInt(STEP_ID_EXTRA, mDetailViewModel.getStepId());
-        if(mExoPlayer != null) outState.putLong(PLAYER_POSITION_STATE, mExoPlayer.getCurrentPosition());
+        if (mExoPlayer != null)
+            outState.putLong(PLAYER_POSITION_STATE, mExoPlayer.getCurrentPosition());
     }
 
     @Override
@@ -201,15 +215,15 @@ public class DetailFragment extends Fragment implements Injectable, View.OnClick
         }
         DataSource.Factory dataSourceFactory = new DefaultDataSourceFactory(getActivity(),
                 Util.getUserAgent(getActivity(), "BakingGoodies"), new DefaultBandwidthMeter());
-            MediaSource videoSource = new ExtractorMediaSource.Factory(dataSourceFactory)
-                    .createMediaSource(videoUri);
-            mExoPlayer.prepare(videoSource);
+        MediaSource videoSource = new ExtractorMediaSource.Factory(dataSourceFactory)
+                .createMediaSource(videoUri);
+        mExoPlayer.prepare(videoSource);
 
-            mExoPlayer.setPlayWhenReady(true);
-            if (mPlayerPosition != -1) {
-                mExoPlayer.seekTo(mPlayerPosition);
-                mPlayerPosition = -1;
-            }
+        mExoPlayer.setPlayWhenReady(true);
+        if (mPlayerPosition != -1) {
+            mExoPlayer.seekTo(mPlayerPosition);
+            mPlayerPosition = -1;
+        }
 
     }
 
