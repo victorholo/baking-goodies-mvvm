@@ -50,6 +50,7 @@ import static com.example.bakingapp.utils.RecipesUtils.STEP_ID_EXTRA;
 public class DetailFragment extends Fragment implements Injectable, View.OnClickListener{
 
     private static final String PLAYER_POSITION_STATE = "player_position_state";
+    private static final String PLAYER_PLAY_PAUSE_STATE = "player_play_pause_state";
 
     @Inject
     ViewModelProvider.Factory mViewModelFactory;
@@ -61,6 +62,7 @@ public class DetailFragment extends Fragment implements Injectable, View.OnClick
     private SimpleExoPlayer mExoPlayer;
 
     private long mPlayerPosition = -1;
+    private boolean mPlayWhenReady = true;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -74,6 +76,7 @@ public class DetailFragment extends Fragment implements Injectable, View.OnClick
             stepId = getArguments().getInt(STEP_ID_EXTRA, -1);
         } else {
             mPlayerPosition = savedInstanceState.getLong(PLAYER_POSITION_STATE);
+            mPlayWhenReady = savedInstanceState.getBoolean(PLAYER_PLAY_PAUSE_STATE);
             recipeId = savedInstanceState.getInt(RECIPE_ID_EXTRA, -1);
             stepId = savedInstanceState.getInt(STEP_ID_EXTRA, -1);
         }
@@ -158,6 +161,7 @@ public class DetailFragment extends Fragment implements Injectable, View.OnClick
         //save the current position of the player
         if (mExoPlayer != null) {
             outState.putLong(PLAYER_POSITION_STATE, mExoPlayer.getCurrentPosition());
+            outState.putBoolean(PLAYER_PLAY_PAUSE_STATE, mExoPlayer.getPlayWhenReady());
         }
     }
 
@@ -215,7 +219,7 @@ public class DetailFragment extends Fragment implements Injectable, View.OnClick
                 mPlayerPosition = -1;
             }
 
-            mExoPlayer.setPlayWhenReady(true);
+            mExoPlayer.setPlayWhenReady(mPlayWhenReady);
         }
     }
 
