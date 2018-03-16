@@ -3,7 +3,6 @@ package com.example.bakingapp.widget;
 import android.app.IntentService;
 import android.app.Notification;
 import android.appwidget.AppWidgetManager;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
@@ -13,12 +12,12 @@ import com.example.bakingapp.R;
 import com.example.bakingapp.data.models.Recipe;
 import com.example.bakingapp.data.repository.RecipesRepository;
 
-import java.util.List;
-import java.util.Random;
-
 import javax.inject.Inject;
 
 import dagger.android.AndroidInjection;
+
+import static com.example.bakingapp.utils.RecipesUtils.RECIPE_ID_EXTRA;
+import static com.example.bakingapp.widget.RecipeWidget.APP_WIDGET_ID_EXTRA;
 
 /**
  * Created by Victor Holotescu on 13-03-2018.
@@ -43,29 +42,29 @@ public class RecipeWidgetService extends IntentService {
     @Override
     protected void onHandleIntent(@Nullable Intent intent) {
 
-        List<Recipe> recipes = mRecipesRepository.getWidgetRecipes();
+        int recipeId = intent.getIntExtra(RECIPE_ID_EXTRA, 0);
+        int appWidgetId = intent.getIntExtra(APP_WIDGET_ID_EXTRA, AppWidgetManager.INVALID_APPWIDGET_ID);
+
+        if(appWidgetId == AppWidgetManager.INVALID_APPWIDGET_ID) return;
+
+        Recipe recipe = mRecipesRepository.getWidgetRecipeById(recipeId);
 
         AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(this);
-        int[] appWidgetIds = appWidgetManager.getAppWidgetIds(new ComponentName(this, RecipeWidget.class));
 
-        appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIds, R.id.widget_ingredients_list);
+        appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetId, R.id.widget_ingredients_list);
 
-        if(recipes != null && recipes.size() > 0){
-            //will get the recipe of the day, every day the next recipe in the database
-            Random r = new Random();
-            int randomRecipe = r.nextInt(recipes.size());
-
-            //Now update all widgets
-            RecipeWidget.updateRecipeWidgets(this, appWidgetManager, appWidgetIds, recipes.get(randomRecipe));
-        }else{
-            //Now update all widgets
-            RecipeWidget.updateRecipeWidgets(this, appWidgetManager, appWidgetIds, null);
+        if (recipe != null) {
+            RecipeWidget.updateAppWidget(this, appWidgetManager, appWidgetId, recipe);
+        } else {
+            RecipeWidget.updateAppWidget(this, appWidgetManager, appWidgetId, null);
         }
 
     }
 
-    public static void updateWidget(Context context){
+    public static void updateWidget(Context context, int recipeId, int appWidgetId) {
         Intent intent = new Intent(context, RecipeWidgetService.class);
+        intent.putExtra(APP_WIDGET_ID_EXTRA, appWidgetId);
+        intent.putExtra(RECIPE_ID_EXTRA, recipeId);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             context.startForegroundService(intent);
         } else {

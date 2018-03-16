@@ -3,6 +3,7 @@ package com.example.bakingapp.di;
 import com.example.bakingapp.ui.DetailActivity;
 import com.example.bakingapp.ui.StepsActivity;
 import com.example.bakingapp.ui.MainActivity;
+import com.example.bakingapp.widget.WidgetConfigActivity;
 
 import dagger.Module;
 import dagger.android.ContributesAndroidInjector;
@@ -22,4 +23,7 @@ public abstract class BuildersModule {
 
     @ContributesAndroidInjector
     abstract DetailActivity contributeDetailActivity();
+
+    @ContributesAndroidInjector
+    abstract WidgetConfigActivity contributeWidgetConfigActivity();
 }

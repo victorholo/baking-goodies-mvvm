@@ -37,10 +37,6 @@ public abstract class RecipeDao {
 
     @Query("SELECT * FROM RecipeDetails")
     @Transaction
-    public abstract List<Recipe> getWidgetRecipes();
-
-    @Query("SELECT * FROM RecipeDetails")
-    @Transaction
     public abstract LiveData<List<RecipeDetails>> getRecipeDetails();
 
     @Query("SELECT * FROM Ingredient WHERE recipeId = :id")
@@ -49,6 +45,10 @@ public abstract class RecipeDao {
     @Query("SELECT * FROM RecipeDetails WHERE id = :id")
     @Transaction
     public abstract LiveData<Recipe> getRecipeById(int id);
+
+    @Query("SELECT * FROM RecipeDetails WHERE id = :id")
+    @Transaction
+    public abstract Recipe getWidgetRecipeById(int id);
 
     @Query("SELECT * FROM Step WHERE recipeId = :recipeId")
     public abstract LiveData<List<Step>> getSteps(int recipeId);

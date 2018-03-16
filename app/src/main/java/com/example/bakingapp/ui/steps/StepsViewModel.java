@@ -20,14 +20,14 @@ public class StepsViewModel extends ViewModel {
     private final RecipesRepository mRepository;
 
     private final MutableLiveData<Integer> recipeId = new MutableLiveData<>();
-    private final LiveData<Recipe> recipes;
+    private final LiveData<Recipe> recipe;
 
     OnStepItemClickedListener mOnStepItemClickListener;
 
     @Inject
     public StepsViewModel(RecipesRepository repository) {
         mRepository = repository;
-        recipes = Transformations.switchMap(recipeId, recipeId -> mRepository.getRecipeById(recipeId));
+        recipe = Transformations.switchMap(recipeId, recipeId -> mRepository.getRecipeById(recipeId));
     }
 
     public void setRecipeId(int id) {
@@ -39,7 +39,7 @@ public class StepsViewModel extends ViewModel {
     }
 
     public LiveData<Recipe> getRecipe() {
-        return recipes;
+        return recipe;
     }
 
 

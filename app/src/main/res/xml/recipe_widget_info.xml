@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
+    android:configure="com.example.bakingapp.widget.WidgetConfigActivity"
     android:initialKeyguardLayout="@layout/recipe_list_widget"
     android:initialLayout="@layout/recipe_list_widget"
     android:minHeight="120dp"

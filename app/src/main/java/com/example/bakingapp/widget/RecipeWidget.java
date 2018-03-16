@@ -5,6 +5,7 @@ import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.view.View;
 import android.widget.RemoteViews;
 
@@ -20,29 +21,32 @@ import static com.example.bakingapp.utils.RecipesUtils.RECIPE_ID_EXTRA;
  */
 public class RecipeWidget extends AppWidgetProvider {
 
-    private static void updateAppWidget(Context context, AppWidgetManager appWidgetManager,
-                                        int appWidgetId, Recipe recipe) {
+    public static final String APP_WIDGET_ID_EXTRA = "app_widget_id_extra";
+
+    public static void updateAppWidget(Context context, AppWidgetManager appWidgetManager,
+                                       int appWidgetId, Recipe recipe) {
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.recipe_list_widget);
 
-        if(recipe != null) {
+        if (recipe != null) {
             views.setViewVisibility(R.id.widget_title, View.VISIBLE);
             views.setViewVisibility(R.id.widget_ingredients_list, View.VISIBLE);
             views.setViewVisibility(R.id.widget_error_layout, View.GONE);
 
             Intent intent = new Intent(context, IngredientsRemoteViewsService.class);
-            intent.putExtra(RECIPE_ID_EXTRA, recipe.getRecipeDetails().getId());
+            intent.setData(Uri.fromParts("content", String.valueOf(recipe.getRecipeDetails().getId()), null));
+
             views.setRemoteAdapter(R.id.widget_ingredients_list, intent);
             // Set the PlantDetailActivity intent to launch when clicked
             Intent appIntent = new Intent(context, StepsActivity.class);
             appIntent.putExtra(RECIPE_ID_EXTRA, recipe.getRecipeDetails().getId());
+            PendingIntent appPendingIntent = PendingIntent.getActivity(context, appWidgetId, appIntent, 0);
 
-            PendingIntent appPendingIntent = PendingIntent.getActivity(context, 0, appIntent, 0);
             views.setPendingIntentTemplate(R.id.widget_ingredients_list, appPendingIntent);
 
             views.setTextViewText(R.id.widget_title, recipe.getRecipeDetails().getName());
             views.setOnClickPendingIntent(R.id.widget_title, appPendingIntent);
 
-        }else{
+        } else {
             views.setViewVisibility(R.id.widget_title, View.GONE);
             views.setViewVisibility(R.id.widget_ingredients_list, View.GONE);
             views.setViewVisibility(R.id.widget_error_layout, View.VISIBLE);
@@ -51,7 +55,7 @@ public class RecipeWidget extends AppWidgetProvider {
             PendingIntent pendingIntent;
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
                 pendingIntent = PendingIntent.getForegroundService(context, 1, intent, 0);
-            }else{
+            } else {
                 pendingIntent = PendingIntent.getService(context, 1, intent, 0);
             }
             views.setOnClickPendingIntent(R.id.widget_retry_button, pendingIntent);
@@ -64,17 +68,22 @@ public class RecipeWidget extends AppWidgetProvider {
         appWidgetManager.updateAppWidget(appWidgetId, views);
     }
 
-    public static void updateRecipeWidgets(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds, Recipe recipe) {
+    @Override
+    public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
         for (int appWidgetId : appWidgetIds) {
-            updateAppWidget(context, appWidgetManager, appWidgetId, recipe);
+             int recipeId = WidgetConfigActivity.loadRecipeId(context, appWidgetId);
+            RecipeWidgetService.updateWidget(context, recipeId, appWidgetId);
         }
     }
 
     @Override
-    public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
-        RecipeWidgetService.updateWidget(context);
-    }
+    public void onDeleted(Context context, int[] appWidgetIds) {
+        super.onDeleted(context, appWidgetIds);
+        for (int appWidgetId : appWidgetIds) {
+            WidgetConfigActivity.deleteRecipeIdPref(context, appWidgetId);
+        }
 
+    }
 
     @Override
     public void onEnabled(Context context) {

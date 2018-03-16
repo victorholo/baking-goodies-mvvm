@@ -81,7 +81,7 @@ public class RecipesRepository {
         return mRecipeDao.getRecipeById(id);
     }
 
-    public List<Ingredient> getWidgetIngredientseById(int id) {
+    public List<Ingredient> getWidgetIngredientsById(int id) {
         return mRecipeDao.getWidgetIngredientsByRecipeId(id);
     }
 
@@ -90,23 +90,34 @@ public class RecipesRepository {
         else return mRecipeDao.getSteps(recipeId);
     }
 
-    //executed on main thread
-    //called from intent service
-    public List<Recipe> getWidgetRecipes() {
-        List<Recipe> recipes = mRecipeDao.getWidgetRecipes();
-        if (recipes != null && recipes.size() > 0) {
-            return recipes;
-        } else {
-            try {
-                List<RecipesResponse> responseList = mApiService.getRecipeResponse().execute().body();
-                recipes = getParsedResponse(responseList);
-                addRecipesToDatabase(recipes);
-                return recipes;
-            } catch (IOException e) {
-                e.printStackTrace();
-                return null;
+    public LiveData<List<Recipe>> getConfigurationRecipes(){
+        MediatorLiveData<List<Recipe>> recipesList = new MediatorLiveData<>();
+
+        LiveData<List<Recipe>> databaseRecipes = mRecipeDao.getRecipes();
+
+        recipesList.addSource(databaseRecipes, newData -> {
+            if (recipesList.getValue() != newData) {
+                recipesList.setValue(newData);
             }
-        }
+        });
+
+        LiveData<List<RecipesResponse>> networkRecipesList = getRecipesFromNetwork();
+        networkRecipesList.observeForever(recipesResponse -> {
+            if (recipesResponse != null && recipesResponse.size() > 0) {
+                mAppExecutors.networkIO().execute(() -> {
+                    List<Recipe> recipes = getParsedResponse(recipesResponse);
+                    addRecipesToDatabase(recipes);
+                });
+            } else {
+                recipesList.setValue(null);
+            }
+        });
+
+        return recipesList;
+    }
+
+    public Recipe getWidgetRecipeById(int id) {
+       return mRecipeDao.getWidgetRecipeById(id);
     }
 
     private LiveData<List<RecipesResponse>> getRecipesFromNetwork() {

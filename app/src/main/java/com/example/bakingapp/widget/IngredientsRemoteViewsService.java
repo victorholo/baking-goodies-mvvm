@@ -2,7 +2,6 @@ package com.example.bakingapp.widget;
 
 import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
@@ -31,7 +30,8 @@ public class IngredientsRemoteViewsService extends RemoteViewsService {
     @Override
     public RemoteViewsFactory onGetViewFactory(Intent intent) {
         AndroidInjection.inject(this);
-        int recipeId = intent.getExtras().getInt(RECIPE_ID_EXTRA);
+        if(intent == null) return null;
+        int recipeId = Integer.valueOf(intent.getData().getSchemeSpecificPart());
         return new ListRemoteViewsFactory(this.getApplicationContext(), recipeId, mRecipesRepository);
     }
 
@@ -39,7 +39,6 @@ public class IngredientsRemoteViewsService extends RemoteViewsService {
     class ListRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
 
         final Context mContext;
-        Cursor mCursor;
         final int mRecipeId;
         List<Ingredient> mIngredients;
         final RecipesRepository mRecipesRepository;
@@ -57,12 +56,12 @@ public class IngredientsRemoteViewsService extends RemoteViewsService {
 
         @Override
         public void onDataSetChanged() {
-            mIngredients = mRecipesRepository.getWidgetIngredientseById(mRecipeId);
+            mIngredients = mRecipesRepository.getWidgetIngredientsById(mRecipeId);
         }
 
         @Override
         public void onDestroy() {
-            mCursor.close();
+
         }
 
         @Override

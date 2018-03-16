@@ -47,7 +47,7 @@ import static com.example.bakingapp.utils.RecipesUtils.STEP_ID_EXTRA;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class DetailFragment extends Fragment implements Injectable, View.OnClickListener {
+public class DetailFragment extends Fragment implements Injectable, View.OnClickListener{
 
     private static final String PLAYER_POSITION_STATE = "player_position_state";
 
@@ -66,16 +66,6 @@ public class DetailFragment extends Fragment implements Injectable, View.OnClick
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         mFragmentDetailBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_detail, container, false);
-
-        return mFragmentDetailBinding.getRoot();
-    }
-
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-
-        final Boolean isTablet = getActivity().getResources().getBoolean(R.bool.is_tablet);
-        final Boolean isLandscape = getActivity().getResources().getBoolean(R.bool.is_landscape);
 
         int recipeId, stepId;
 
@@ -98,6 +88,16 @@ public class DetailFragment extends Fragment implements Injectable, View.OnClick
             mDetailViewModel.setStepId(stepId);
         }
 
+        return mFragmentDetailBinding.getRoot();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        final Boolean isTablet = getActivity().getResources().getBoolean(R.bool.is_tablet);
+        final Boolean isLandscape = getActivity().getResources().getBoolean(R.bool.is_landscape);
+
         if (!isTablet && !isLandscape) {
             mFragmentDetailBinding.previousStepButton.setOnClickListener(this);
             mFragmentDetailBinding.nextStepButton.setOnClickListener(this);
@@ -112,8 +112,6 @@ public class DetailFragment extends Fragment implements Injectable, View.OnClick
                     showVideoPlaceholder(false);
                     initializePlayer(Uri.parse(videoUrl));
                 } else {
-                    if (mExoPlayer != null) mExoPlayer.stop();
-
                     showVideoPlaceholder(true);
                     String thumbnailUrl = step.getThumbnailURL();
                     loadPlayerThumbnail(thumbnailUrl);
@@ -142,17 +140,13 @@ public class DetailFragment extends Fragment implements Injectable, View.OnClick
         });
     }
 
-
     @Override
-    public void onPause() {
-        super.onPause();
-        if (mExoPlayer != null) mExoPlayer.setPlayWhenReady(false);
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        if (mExoPlayer != null) mExoPlayer.setPlayWhenReady(true);
+    public void onStop() {
+        super.onStop();
+        if (mExoPlayer != null) {
+            mPlayerPosition = mExoPlayer.getCurrentPosition();
+            releasePlayer();
+        }
     }
 
     @Override
@@ -160,25 +154,22 @@ public class DetailFragment extends Fragment implements Injectable, View.OnClick
         super.onSaveInstanceState(outState);
         outState.putInt(RECIPE_ID_EXTRA, mDetailViewModel.getRecipeId());
         outState.putInt(STEP_ID_EXTRA, mDetailViewModel.getStepId());
-        if (mExoPlayer != null)
+
+        //save the current position of the player
+        if (mExoPlayer != null) {
             outState.putLong(PLAYER_POSITION_STATE, mExoPlayer.getCurrentPosition());
+        }
     }
 
     @Override
     public void onClick(View v) {
         if (v.getId() == R.id.next_step_button) {
-            if (mExoPlayer != null) mExoPlayer.stop();
+            releasePlayer();
             mDetailViewModel.getNext();
         } else if (v.getId() == R.id.previous_step_button) {
-            if (mExoPlayer != null) mExoPlayer.stop();
+            releasePlayer();
             mDetailViewModel.getPrevious();
         }
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        releasePlayer();
     }
 
     private void loadPlayerThumbnail(String url) {
@@ -212,23 +203,24 @@ public class DetailFragment extends Fragment implements Injectable, View.OnClick
             mFragmentDetailBinding.playerView.setPlayer(mExoPlayer);
 
 
-        }
-        DataSource.Factory dataSourceFactory = new DefaultDataSourceFactory(getActivity(),
-                Util.getUserAgent(getActivity(), "BakingGoodies"), new DefaultBandwidthMeter());
-        MediaSource videoSource = new ExtractorMediaSource.Factory(dataSourceFactory)
-                .createMediaSource(videoUri);
-        mExoPlayer.prepare(videoSource);
+            DataSource.Factory dataSourceFactory = new DefaultDataSourceFactory(getActivity(),
+                    Util.getUserAgent(getActivity(), "BakingGoodies"), new DefaultBandwidthMeter());
+            MediaSource videoSource = new ExtractorMediaSource.Factory(dataSourceFactory)
+                    .createMediaSource(videoUri);
+            mExoPlayer.prepare(videoSource);
 
-        mExoPlayer.setPlayWhenReady(true);
-        if (mPlayerPosition != -1) {
-            mExoPlayer.seekTo(mPlayerPosition);
-            mPlayerPosition = -1;
-        }
+            //retain position if available, after orientation change
+            if (mPlayerPosition != -1) {
+                mExoPlayer.seekTo(mPlayerPosition);
+                mPlayerPosition = -1;
+            }
 
+            mExoPlayer.setPlayWhenReady(true);
+        }
     }
 
     private void releasePlayer() {
-        if (mExoPlayer != null) {
+        if(mExoPlayer != null) {
             mExoPlayer.stop();
             mExoPlayer.release();
             mExoPlayer = null;

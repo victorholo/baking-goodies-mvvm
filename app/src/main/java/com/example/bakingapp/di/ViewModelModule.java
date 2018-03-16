@@ -7,6 +7,7 @@ import com.example.bakingapp.ui.detail.DetailViewModel;
 import com.example.bakingapp.ui.recipes.RecipesViewModel;
 import com.example.bakingapp.ui.steps.StepsViewModel;
 import com.example.bakingapp.viewmodels.ViewModelFactory;
+import com.example.bakingapp.widget.WidgetViewModel;
 
 import dagger.Binds;
 import dagger.Module;
@@ -18,6 +19,11 @@ import dagger.multibindings.IntoMap;
 
 @Module
 abstract class ViewModelModule {
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(WidgetViewModel.class)
+    abstract ViewModel bindWidgetViewModel(WidgetViewModel widgetViewModel);
 
     @Binds
     @IntoMap

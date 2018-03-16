@@ -37,8 +37,7 @@ public class StepsFragment extends Fragment implements Injectable, StepsAdapter.
     private StepsViewModel mStepsViewModel;
 
     private StepsViewModel.OnStepItemClickedListener mOnClickListener;
-    private int[] mScrollPosition = new int[2];
-
+    private int[] mScrollPosition;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -68,8 +67,10 @@ public class StepsFragment extends Fragment implements Injectable, StepsAdapter.
         }
 
         int recipeId;
-        if (savedInstanceState == null) recipeId = getArguments().getInt(RECIPE_ID_EXTRA, -1);
-        else {
+        if (savedInstanceState == null) {
+            recipeId = getArguments().getInt(RECIPE_ID_EXTRA, -1);
+            mScrollPosition = new int[2];
+        }else {
             recipeId = savedInstanceState.getInt(RECIPE_ID_EXTRA, -1);
             mScrollPosition = savedInstanceState.getIntArray(SCROLL_POSITION_EXTRA);
         }
@@ -85,7 +86,10 @@ public class StepsFragment extends Fragment implements Injectable, StepsAdapter.
                     activityActionBar.setTitle(recipe.getRecipeDetails().getName());
                 mFragmentStepsBinding.ingredientsLayout.ingredientsTextView.setText(RecipesUtils.getIngredientsTextFromList(recipe.getIngredients()));
                 mStepsAdapter.swapSteps(recipe.getSteps());
-                mFragmentStepsBinding.scrollView.scrollTo(mScrollPosition[0], mScrollPosition[1]);
+
+                mFragmentStepsBinding.scrollView.post(() -> mFragmentStepsBinding.scrollView.scrollTo(mScrollPosition[0], mScrollPosition[1]));
+
+
             }
         });
     }
